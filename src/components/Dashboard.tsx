@@ -113,7 +113,7 @@ const Dashboard: React.FC = () => {
             <RadarChart cx={330} cy={250} outerRadius={125} width={650} height={500} data={radarData}>
               <PolarGrid stroke="#ccc" strokeDasharray="5 5" />
               <PolarAngleAxis dataKey="metric" tick={{ fill: 'black', fontWeight: 'bold' }} />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#666566" />
               <Radar name="Metrics" dataKey="value" stroke="#8884d8" fill="#268501" fillOpacity={0.9} />
               <Tooltip />
             </RadarChart>
