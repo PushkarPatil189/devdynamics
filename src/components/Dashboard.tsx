@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get('/data.json');
+      const response = await axios.get('${process.env.PUBLIC_URL}/data.json');
       const fetchedData = response.data.map((d: Omit<ActivityData, 'date'> & { date: string }) => ({
         ...d,
         date: new Date(d.date)
