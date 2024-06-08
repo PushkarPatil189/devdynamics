@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, PieChart, Pie, Cell } from 'recharts';
-import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaCalendarAlt } from 'react-icons/fa';
 import { useSpring, animated } from 'react-spring';
+import jsonData from '../data/data.json'; // Adjust the path according to your project structure
 import './Dashboard.css';
 
 interface ActivityData {
@@ -17,35 +17,32 @@ interface ActivityData {
 }
 
 const Dashboard: React.FC = () => {
-  const [data, setData] = useState<ActivityData[]>([]);
   const [filteredData, setFilteredData] = useState<ActivityData[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get('${process.env.PUBLIC_URL}/data.json');
-      const fetchedData = response.data.map((d: Omit<ActivityData, 'date'> & { date: string }) => ({
-        ...d,
-        date: new Date(d.date)
-      }));
-      setData(fetchedData);
-      setFilteredData(fetchedData);
-    };
-    fetchData();
+    const fetchedData = jsonData.map((d: Omit<ActivityData, 'date'> & { date: string }) => ({
+      ...d,
+      date: new Date(d.date)
+    }));
+    setFilteredData(fetchedData);
   }, []);
 
   useEffect(() => {
     if (startDate && endDate) {
-      const filtered = data.filter(d => {
+      const filtered = jsonData.filter(d => {
         const date = new Date(d.date).getTime();
         return date >= new Date(startDate).getTime() && date <= new Date(endDate).getTime();
-      });
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(data);
-    }
-  }, [startDate, endDate, data]);
+      }).map(d => ({
+        ...d,
+        date: new Date(d.date)
+      }));
+      setFilteredData(filtered);}
+    // } else {
+    //   setFilteredData(jsonData);
+    // }
+  }, [startDate, endDate]);
 
   const formattedData = filteredData.map(d => ({
     ...d,
@@ -114,9 +111,9 @@ const Dashboard: React.FC = () => {
           <animated.div style={radarChartProps} className="chart-card radar-chart">
             <h2>Developer Metrics Radar Chart</h2>
             <RadarChart cx={330} cy={250} outerRadius={125} width={650} height={500} data={radarData}>
-              <PolarGrid stroke="#555" strokeDasharray="5 5" />
+              <PolarGrid stroke="#ccc" strokeDasharray="5 5" />
               <PolarAngleAxis dataKey="metric" tick={{ fill: 'black', fontWeight: 'bold' }} />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#585858" />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} />
               <Radar name="Metrics" dataKey="value" stroke="#8884d8" fill="#268501" fillOpacity={0.9} />
               <Tooltip />
             </RadarChart>
@@ -145,7 +142,7 @@ const Dashboard: React.FC = () => {
                 {radarData.map((entry, index) => (
                   <div key={`legend-${index}`} className="legend-item">
                     <div className="legend-color" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                    <div className="legend-text">{entry.metric}: {entry.value}</div>
+                    <div                   className="legend-text">{entry.metric}: {entry.value}</div>
                   </div>
                 ))}
               </div>
@@ -158,3 +155,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
